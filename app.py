@@ -152,15 +152,21 @@ def verify_gumroad_license(license_key):
     if clean_key == "ADMIN-GRIDLY-2026":
         return True, "Admin Access Granted!"
 
+    api_endpoint = "https://" + "://gumroad.com"
+
     try:
         response = requests.post(
-            "https://gumroad.com",
+            api_endpoint,
+            headers={
+                "User-Agent": "GridlyProApp/1.0",
+                "Accept": "application/json"
+            },
             data={
                 "product_id": GUMROAD_PRODUCT_ID,
                 "license_key": clean_key,
                 "increment_uses_count": "false"
             },
-            timeout=10
+            timeout=15
         )
         data = response.json()
         if data.get("success") and not data.get("purchase", {}).get("refunded") and not data.get("purchase", {}).get("chargebacked"):
@@ -198,7 +204,6 @@ if not st.session_state.unlocked:
                     else:
                         st.error(msg)
     st.stop()
-
 
 # =====================================================
 # SESSION STATE
