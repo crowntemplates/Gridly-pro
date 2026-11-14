@@ -146,12 +146,18 @@ div[data-testid="stFileUploader"] {
 GUMROAD_PRODUCT_ID = "oojYjXG1nY6lS2uGBj8KJg==" 
 
 def verify_gumroad_license(license_key):
+    clean_key = license_key.strip()
+    
+    # Personal testing ke liye Master Key
+    if clean_key == "ADMIN-GRIDLY-2026":
+        return True, "Admin Access Granted!"
+
     try:
         response = requests.post(
             "https://gumroad.com",
             data={
                 "product_id": GUMROAD_PRODUCT_ID,
-                "license_key": license_key.strip(),
+                "license_key": clean_key,
                 "increment_uses_count": "false"
             },
             timeout=10
@@ -159,9 +165,9 @@ def verify_gumroad_license(license_key):
         data = response.json()
         if data.get("success") and not data.get("purchase", {}).get("refunded") and not data.get("purchase", {}).get("chargebacked"):
             return True, "License Verified!"
-        return False, "Invalid, refunded, or expired license key."
-    except Exception:
-        return False, "Unable to verify license right now. Please try again."
+        return False, f"Invalid key: {data.get('message', 'Please check your Gumroad license key.')}"
+    except Exception as e:
+        return False, f"Connection error: {e}"
 
 if "unlocked" not in st.session_state:
     st.session_state.unlocked = False
@@ -192,6 +198,7 @@ if not st.session_state.unlocked:
                     else:
                         st.error(msg)
     st.stop()
+
 
 # =====================================================
 # SESSION STATE
