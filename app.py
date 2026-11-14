@@ -152,7 +152,7 @@ def verify_gumroad_license(license_key):
     if clean_key == "ADMIN-GRIDLY-2026":
         return True, "Admin Access Granted!"
 
-    api_endpoint = "https://" + "://gumroad.com"
+    api_endpoint = ".".join(["https://api", "gumroad", "com/v2/licenses/verify"])
 
     try:
         response = requests.post(
